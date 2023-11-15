@@ -1,13 +1,8 @@
-import {
-  ClassSerializerInterceptor,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
-import { RequestValidationPipe } from './common/filter/request.pipe';
 
 class Application {
   private logger = new Logger(Application.name);
@@ -27,17 +22,18 @@ class Application {
       origin: this.corsOriginList,
       credentials: true,
     });
-    this.server.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-      new RequestValidationPipe(),
-    );
-    this.server.useGlobalInterceptors(
-      new ClassSerializerInterceptor(this.server.get(Reflector)),
-    );
+    // this.server.useGlobalPipes(
+    //   new ValidationPipe({
+    //     whitelist: true,
+    //     forbidNonWhitelisted: true,
+    //     transform: true,
+    //   }),
+
+    //   // new RequestValidationPipe(),
+    // );
+    // this.server.useGlobalInterceptors(
+    //   new ClassSerializerInterceptor(this.server.get(Reflector)),
+    // );
     this.server.useGlobalFilters(new HttpExceptionFilter());
   }
 
@@ -49,9 +45,9 @@ class Application {
 
   serverLog() {
     if (process.env.DEV_MODE === 'dev') {
-      this.logger.log(`✅ Server on http://localhost:${this.PORT}`);
+      this.logger.log(`✅ Server on http://localhost:${this.PORT}/graphql`);
     } else {
-      this.logger.log(`✅ Server on ${this.PORT}`);
+      this.logger.log(`✅ Server on ${this.PORT}/graphql`);
     }
   }
 }

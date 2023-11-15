@@ -1,16 +1,7 @@
-import { IsUUID } from 'class-validator';
 import { format } from 'date-fns';
-import {
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export abstract class CommonEntity {
-  @IsUUID()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
   @CreateDateColumn({
     type: 'timestamp',
     transformer: {
@@ -39,7 +30,6 @@ export abstract class CommonEntity {
   })
   updated_at: Date;
 
-  // @Exclude()
-  // @DeleteDateColumn({ type: 'timestamp', default: null })
-  // delete_at: Date;
+  @DeleteDateColumn({ type: 'timestamp', default: null })
+  delete_at: Date;
 }
