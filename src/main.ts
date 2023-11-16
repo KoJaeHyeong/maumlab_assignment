@@ -11,7 +11,7 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 class Application {
   private logger = new Logger(Application.name);
   private corsOriginList: string[];
-  private PORT = process.env.PORT;
+  private PORT = process.env.PORT || 4000;
 
   constructor(private server: NestExpressApplication) {
     this.server = server;
@@ -31,8 +31,6 @@ class Application {
         transform: true,
       }),
     );
-    // new RequestValidationPipe(),
-    //   // );
     this.server.useGlobalInterceptors(
       new ClassSerializerInterceptor(this.server.get(Reflector)),
     );
