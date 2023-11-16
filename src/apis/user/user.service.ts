@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
@@ -12,9 +13,25 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
   async create(createUserInput: CreateUserInput) {
-    const result = await this.userRepository.save(createUserInput);
+    const { email, password, ...rest } = createUserInput;
+    const user = await this.findOneUser(email);
+
+    if (user) throw new BadRequestException('이미 존재하는 유저입니다.');
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const result = await this.userRepository.save({
+      ...createUserInput,
+      password: hashPassword,
+    });
 
     return result;
+  }
+
+  async findOneUser(email: string) {
+    return await this.userRepository.findOne({
+      where: { email },
+    });
   }
 
   findAll() {

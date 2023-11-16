@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { IsEmail } from 'class-validator';
 import { CommonEntity } from 'src/common/entity/common.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -9,17 +10,26 @@ export class User extends CommonEntity {
   @Field(() => String)
   user_id: string;
 
+  @IsEmail()
   @Column({ unique: true })
   @Field(() => String)
   email: string;
 
   @Column()
-  @Field(() => String)
   password: string;
 
   @Column()
   @Field(() => String)
   name: string;
+
+  @Field(() => Date)
+  created_at: Date;
+
+  @Field(() => Date)
+  updated_at: Date;
+
+  @Field(() => Date, { nullable: true })
+  deleted_at: Date;
 
   // @OneToMany((type) => Su)
 }

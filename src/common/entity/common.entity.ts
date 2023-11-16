@@ -31,5 +31,5 @@ export abstract class CommonEntity {
   updated_at: Date;
 
   @DeleteDateColumn({ type: 'timestamp', default: null })
-  delete_at: Date;
+  deleted_at: Date;
 }

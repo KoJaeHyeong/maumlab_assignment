@@ -4,7 +4,6 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface Response<T> {
@@ -15,15 +14,18 @@ export interface Response<T> {
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<Response<T>> {
+  intercept(context: ExecutionContext, next: CallHandler) {
+    console.log('context', context);
+    console.log('context', context.switchToHttp());
+    console.log('context', context.switchToHttp().getResponse());
+    console.log('context', context.switchToHttp().getRequest());
+
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
+        console.log('@@@@@@@@@@@@@', data);
 
-        return { success: true, data: data };
+        // return data;
+        return data;
       }),
     );
   }

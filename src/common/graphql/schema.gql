@@ -5,15 +5,23 @@
 type User {
   user_id: String!
   email: String!
-  password: String!
   name: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Query {
   user: [User!]!
 }
 
 type Mutation {
+  """회원가입"""
   signUp(createUserInput: CreateUserInput!): User!
 }
 

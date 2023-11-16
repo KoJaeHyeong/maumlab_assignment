@@ -1,5 +1,9 @@
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
@@ -22,18 +26,16 @@ class Application {
       origin: this.corsOriginList,
       credentials: true,
     });
-    // this.server.useGlobalPipes(
-    //   new ValidationPipe({
-    //     whitelist: true,
-    //     forbidNonWhitelisted: true,
-    //     transform: true,
-    //   }),
-
-    //   // new RequestValidationPipe(),
-    // );
-    // this.server.useGlobalInterceptors(
-    //   new ClassSerializerInterceptor(this.server.get(Reflector)),
-    // );
+    this.server.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+      }),
+    );
+    // new RequestValidationPipe(),
+    //   // );
+    this.server.useGlobalInterceptors(
+      new ClassSerializerInterceptor(this.server.get(Reflector)),
+    );
     this.server.useGlobalFilters(new HttpExceptionFilter());
   }
 
