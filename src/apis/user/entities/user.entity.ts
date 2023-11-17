@@ -31,5 +31,7 @@ export class User extends CommonEntity {
   @Field(() => Date, { nullable: true })
   deleted_at: Date;
 
-  // @OneToMany((type) => Su)
+  // @OneToMany(() => Survey, (survey) => survey.user)
+  // @Field(() => [Survey])
+  // survey: Survey[];
 }

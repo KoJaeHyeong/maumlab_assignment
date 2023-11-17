@@ -1,9 +1,5 @@
-import {
-  ClassSerializerInterceptor,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
@@ -31,9 +27,9 @@ class Application {
         transform: true,
       }),
     );
-    this.server.useGlobalInterceptors(
-      new ClassSerializerInterceptor(this.server.get(Reflector)),
-    );
+    // this.server.useGlobalInterceptors(
+    //   new ClassSerializerInterceptor(this.server.get(Reflector)),
+    // );
     this.server.useGlobalFilters(new HttpExceptionFilter());
   }
 
