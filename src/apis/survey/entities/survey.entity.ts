@@ -1,7 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsBoolean, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Question } from 'src/apis/question/entities/question.entity';
 import { CommonEntity } from 'src/common/entity/common.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'survey' })
 @ObjectType()
@@ -22,10 +23,10 @@ export class Survey extends CommonEntity {
   @Field(() => String, { nullable: true })
   survey_description?: string;
 
-  @IsBoolean()
-  @Column({ type: 'boolean', default: false })
-  @Field(() => Boolean)
-  is_completed: boolean;
+  // @IsBoolean()
+  // @Column({ type: 'boolean', default: false })
+  // @Field(() => Boolean)
+  // is_completed: boolean;
 
   @Field(() => Date)
   created_at: Date;
@@ -40,4 +41,8 @@ export class Survey extends CommonEntity {
   // @JoinColumn({ name: 'user_id' })
   // @Field(() => User)
   // user: User;
+
+  @OneToMany(() => Question, (question) => question.survey)
+  @Field(() => [Question])
+  question: Question[];
 }
