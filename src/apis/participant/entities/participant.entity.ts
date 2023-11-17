@@ -1,7 +1,9 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Answer } from 'src/apis/answer/entities/answer.entity';
+import { CompletedSurvey } from 'src/apis/completed-survey/entities/completed-survey.entity';
 import { CommonEntity } from 'src/common/entity/common.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'participant' })
 @ObjectType()
@@ -28,6 +30,17 @@ export class Participant extends CommonEntity {
   @Column({ type: 'varchar' })
   @Field(() => String)
   participant_sex: string;
+
+  @OneToMany(() => Answer, (answer) => answer.participant)
+  @Field(() => [Answer])
+  answer: Answer[];
+
+  @OneToMany(
+    () => CompletedSurvey,
+    (completedSurvey) => completedSurvey.participant,
+  )
+  @Field(() => [CompletedSurvey])
+  completedSurvey: CompletedSurvey[];
 
   @Field(() => Date)
   created_at: Date;

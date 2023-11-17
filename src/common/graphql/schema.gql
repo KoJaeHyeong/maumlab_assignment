@@ -2,8 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Answer {
-  answer_id: String!
+type Participant {
+  participant_id: String!
+  participant_name: String!
+  participant_birth: String!
+  participant_sex: String!
+  answer: [Answer!]!
+  completedSurvey: [CompletedSurvey!]!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -14,25 +19,10 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Choice {
-  choice_id: String!
-  choice_item: String!
-  choice_no: Int!
-  choice_score: Int!
-  created_at: DateTime!
-  updated_at: DateTime!
-  deleted_at: DateTime
-}
-
 type CompletedSurvey {
   completed_survey_id: String!
-}
-
-type Participant {
-  participant_id: String!
-  participant_name: String!
-  participant_birth: String!
-  participant_sex: String!
+  survey: Survey!
+  participant: Participant!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -42,17 +32,42 @@ type Survey {
   survey_id: String!
   title: String!
   survey_description: String
+  question: [Question!]!
+  completedSurvey: [CompletedSurvey!]!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
-  question: [Question!]!
 }
 
 type Question {
   question_id: String!
   item: String!
   item_no: Int!
+  choice: [Choice!]!
+  answer: [Answer!]!
   survey: Survey!
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
+}
+
+type Choice {
+  choice_id: String!
+  choice_item: String!
+  choice_no: Int!
+  choice_score: Int!
+  answer: [Answer!]!
+  question: Question!
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
+}
+
+type Answer {
+  answer_id: String!
+  choice: Choice!
+  question: Question!
+  participant: Participant!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime

@@ -1,7 +1,16 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsInt, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Answer } from 'src/apis/answer/entities/answer.entity';
+import { Question } from 'src/apis/question/entities/question.entity';
 import { CommonEntity } from 'src/common/entity/common.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'choice' })
 @ObjectType()
@@ -29,9 +38,14 @@ export class Choice extends CommonEntity {
   @Field(() => Int)
   choice_score: number;
 
-  // @ManyToOne(() => Question, (question) => question.choice)
-  // @Field(() => Question)
-  // question: Question;
+  @OneToMany(() => Answer, (answer) => answer.choice)
+  @Field(() => [Answer])
+  answer: Answer[];
+
+  @ManyToOne(() => Question, (question) => question.choice)
+  @JoinColumn({ name: 'question_id' })
+  @Field(() => Question)
+  question: Question;
 
   @Field(() => Date)
   created_at: Date;
