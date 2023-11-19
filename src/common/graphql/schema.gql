@@ -84,7 +84,12 @@ type User {
 
 type Query {
   user: [User!]!
-  survey(id: Int!): Survey!
+
+  """모든 설문지 조회"""
+  fetchAllSurvey: [Survey!]!
+
+  """설문지 조회"""
+  fetchSurvey(survey_id: String!): Survey!
   question(id: Int!): Question!
   choice(id: Int!): Choice!
   answer(id: Int!): Answer!
@@ -98,7 +103,12 @@ type Mutation {
 
   """설문지 작성"""
   createSurvey(createSurveyInput: CreateSurveyInput!): Survey!
-  removeSurvey(id: Int!): Survey!
+
+  """설문지 수정"""
+  updateSurvey(survey_id: String!, updateSurveyInput: UpdateSurveyInput!): Survey!
+
+  """설문지 삭제"""
+  removeSurvey(survey_id: String!): Boolean!
   createQuestion(createQuestionInput: CreateQuestionInput!): Question!
   updateQuestion(updateQuestionInput: UpdateQuestionInput!): Question!
   removeQuestion(id: Int!): Question!
@@ -123,6 +133,11 @@ input CreateUserInput {
 }
 
 input CreateSurveyInput {
+  title: String!
+  survey_description: String!
+}
+
+input UpdateSurveyInput {
   title: String!
   survey_description: String!
 }
