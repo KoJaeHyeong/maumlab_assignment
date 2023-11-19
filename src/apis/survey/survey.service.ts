@@ -13,7 +13,7 @@ export class SurveyService {
   ) {}
 
   async create(createSurveyInput: CreateSurveyInput) {
-    const isExist = await this.findOneSurvey(createSurveyInput.title);
+    const isExist = await this.findOneSurveybyTitle(createSurveyInput.title);
 
     if (isExist)
       throw new BadRequestException('이미 존재하는 설문지 제목입니다.');
@@ -22,27 +22,45 @@ export class SurveyService {
     return await this.surveyRepository.save(createSurveyInput);
   }
 
-  async update(id: number, updateSurveyInput: UpdateSurveyInput) {
-    return `This action updates a #${id} survey`;
+  async update(id: string, updateSurveyInput: UpdateSurveyInput) {
+    const isExist = await this.surveyRepository.findOne({
+      where: { survey_id: id },
+    });
+
+    if (!isExist) throw new BadRequestException('존재하지 않는 설문입니다.');
+
+    const newSurvey = {
+      ...isExist,
+      ...updateSurveyInput,
+    };
+
+    return await this.surveyRepository.save(newSurvey);
   }
 
-  async findOneSurvey(title: string) {
+  async findAll() {
+    return await this.surveyRepository.find({ relations: ['question'] });
+  }
+
+  async findOne(id: string) {
+    return await this.surveyRepository.findOne({
+      where: { survey_id: id },
+      relations: ['question'],
+    });
+  }
+
+  async remove(id: string) {
+    const result = await this.surveyRepository.softDelete(id);
+
+    console.log(result);
+
+    return true;
+  }
+
+  async findOneSurveybyTitle(title: string) {
     return await this.surveyRepository.findOne({
       where: {
         title,
       },
     });
-  }
-
-  findAll() {
-    return `This action returns all survey`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} survey`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} survey`;
   }
 }
