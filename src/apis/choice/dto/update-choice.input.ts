@@ -6,12 +6,12 @@ export class UpdateChoiceInput extends PartialType(CreateChoiceInput) {
   @Field(() => String)
   choice_id: string;
 
-  @Field(() => Int)
-  choice_no: number;
+  @Field(() => Int, { nullable: true })
+  choice_no?: number;
 
-  @Field(() => String)
-  choice_item: string;
+  @Field(() => String, { nullable: true })
+  choice_item?: string;
 
-  @Field(() => Int)
-  choice_score: number;
+  @Field(() => Int, { nullable: true })
+  choice_score?: number;
 }

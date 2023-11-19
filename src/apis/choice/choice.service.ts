@@ -28,19 +28,69 @@ export class ChoiceService {
     return result;
   }
 
-  async update(updateChoiceInput: UpdateChoiceInput[]) {
-    // const question:
+  async update(id: string, updateChoiceInput: UpdateChoiceInput[]) {
+    const question = await this.questionService.findOneById(id);
+    console.log(updateChoiceInput);
+
+    if (!question) throw new NotFoundException('문항이 존재하지 않습니다.');
+
+    const queryRunner =
+      this.choiceRepository.manager.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const result = [];
+
+      for (const choice of updateChoiceInput) {
+        const isExist = await queryRunner.manager.findOne(Choice, {
+          where: { choice_id: choice.choice_id },
+        });
+
+        if (!isExist) {
+          await queryRunner.rollbackTransaction();
+          throw new NotFoundException('선택지가 존재하지 않습니다.'); // 함수 즉시 종료
+        }
+
+        const newChoice = {
+          ...isExist,
+          ...choice,
+        };
+
+        const SaveChoice = await queryRunner.manager.save(Choice, newChoice);
+
+        result.push(SaveChoice);
+      }
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  findAll() {
-    return `This action returns all choice`;
+  async findAllByQuesiontId(id: string) {
+    const result = await this.choiceRepository.find({
+      where: { question: { question_id: id } },
+    });
+
+    return result;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} choice`;
+  async findOneChoice(id: string) {
+    return await this.choiceRepository.findOne({
+      where: { choice_id: id },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} choice`;
+  async remove(id: string) {
+    const result = await this.choiceRepository.softDelete(id);
+    console.log(result);
+
+    return result.affected ? true : false;
   }
 }

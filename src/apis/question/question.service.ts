@@ -102,7 +102,6 @@ export class QuestionService {
     const result = await this.questionRepository.softDelete({
       question_id: id,
     });
-    console.log(result);
 
     return result.affected ? true : false;
   }

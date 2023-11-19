@@ -99,7 +99,12 @@ type Query {
 
   """문항 조회"""
   fetchQuestion(question_id: String!): Question!
-  choice(id: Int!): Choice!
+
+  """모든 선택지 조회"""
+  fetchAllChoiceOfQuestion(question_id: String!): [Choice!]!
+
+  """선택지 조회"""
+  fetchOneChoice(choice_id: String!): Choice!
   answer(id: Int!): Answer!
   participant(id: Int!): Participant!
   completedSurvey(id: Int!): CompletedSurvey!
@@ -124,9 +129,13 @@ type Mutation {
   """문항 수정"""
   updateQuestion(survey_id: String!, updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
   removeQuestion(question_id: String!): Boolean!
+
+  """선택지 등록"""
   createChoice(question_id: String!, createChoiceInput: [CreateChoiceInput!]!): [Choice!]!
-  updateChoice(updateChoiceInput: [UpdateChoiceInput!]!): [Choice!]!
-  removeChoice(id: Int!): Choice!
+
+  """선택지 수정"""
+  updateChoice(question_id: String!, updateChoiceInput: [UpdateChoiceInput!]!): [Choice!]!
+  removeChoice(choice_id: String!): Boolean!
   createAnswer(createAnswerInput: CreateAnswerInput!): Answer!
   updateAnswer(updateAnswerInput: UpdateAnswerInput!): Answer!
   removeAnswer(id: Int!): Answer!
@@ -150,8 +159,8 @@ input CreateSurveyInput {
 }
 
 input UpdateSurveyInput {
-  title: String!
-  survey_description: String!
+  title: String
+  survey_description: String
 }
 
 input CreateQuestionInput {
@@ -172,9 +181,9 @@ input CreateChoiceInput {
 }
 
 input UpdateChoiceInput {
-  choice_item: String!
-  choice_no: Int!
-  choice_score: Int!
+  choice_item: String
+  choice_no: Int
+  choice_score: Int
   choice_id: String!
 }
 

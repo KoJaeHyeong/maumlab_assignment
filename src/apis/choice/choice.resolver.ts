@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ChoiceService } from './choice.service';
 import { CreateChoiceInput } from './dto/create-choice.input';
 import { UpdateChoiceInput } from './dto/update-choice.input';
@@ -8,7 +8,7 @@ import { Choice } from './entities/choice.entity';
 export class ChoiceResolver {
   constructor(private readonly choiceService: ChoiceService) {}
 
-  @Mutation(() => [Choice])
+  @Mutation(() => [Choice], { description: '선택지 등록' })
   async createChoice(
     @Args('question_id', { type: () => String }) id: string,
     @Args('createChoiceInput', { type: () => [CreateChoiceInput] })
@@ -17,26 +17,29 @@ export class ChoiceResolver {
     return await this.choiceService.create(id, createChoiceInput);
   }
 
-  @Mutation(() => [Choice])
+  @Mutation(() => [Choice], { description: '선택지 수정' })
   async updateChoice(
+    @Args('question_id') id: string,
     @Args('updateChoiceInput', { type: () => [UpdateChoiceInput] })
     updateChoiceInput: UpdateChoiceInput[],
   ) {
-    return this.choiceService.update(updateChoiceInput);
+    return this.choiceService.update(id, updateChoiceInput);
   }
 
-  @Query(() => [Choice], { name: 'choice' })
-  findAll() {
-    return this.choiceService.findAll();
+  @Query(() => [Choice], { description: '모든 선택지 조회' })
+  async fetchAllChoiceOfQuestion(
+    @Args('question_id', { type: () => String }) id: string,
+  ) {
+    return this.choiceService.findAllByQuesiontId(id);
   }
 
-  @Query(() => Choice, { name: 'choice' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.choiceService.findOne(id);
+  @Query(() => Choice, { description: '선택지 조회' })
+  async fetchOneChoice(@Args('choice_id', { type: () => String }) id: string) {
+    return this.choiceService.findOneChoice(id);
   }
 
-  @Mutation(() => Choice)
-  removeChoice(@Args('id', { type: () => Int }) id: number) {
+  @Mutation(() => Boolean)
+  removeChoice(@Args('choice_id', { type: () => String }) id: string) {
     return this.choiceService.remove(id);
   }
 }
