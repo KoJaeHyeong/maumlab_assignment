@@ -30,7 +30,7 @@ export class SurveyResolver {
 
   @Query(() => Survey, { description: '설문지 조회' })
   async fetchSurvey(@Args('survey_id') id: string) {
-    return await this.surveyService.findOne(id);
+    return await this.surveyService.findOneById(id);
   }
 
   @Mutation(() => Boolean, {

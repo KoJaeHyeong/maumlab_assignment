@@ -41,10 +41,9 @@ export class SurveyService {
     return await this.surveyRepository.find({ relations: ['question'] });
   }
 
-  async findOne(id: string) {
+  async findOneById(id: string) {
     return await this.surveyRepository.findOne({
       where: { survey_id: id },
-      relations: ['question'],
     });
   }
 
@@ -53,7 +52,7 @@ export class SurveyService {
 
     console.log(result);
 
-    return true;
+    return result.affected ? true : false;
   }
 
   async findOneSurveybyTitle(title: string) {

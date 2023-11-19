@@ -22,16 +22,16 @@ export class Question extends CommonEntity {
   question_id: string;
 
   @IsNotEmpty()
-  @IsString()
-  @Column({ type: 'text' })
-  @Field(() => String)
-  item: string;
-
-  @IsNotEmpty()
   @IsInt()
   @Column({ type: 'int' })
   @Field(() => Int)
   item_no: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @Column({ type: 'text' })
+  @Field(() => String)
+  item: string;
 
   @OneToMany(() => Choice, (choice) => choice.question)
   @Field(() => [Choice])

@@ -41,8 +41,8 @@ type Survey {
 
 type Question {
   question_id: String!
-  item: String!
   item_no: Int!
+  item: String!
   choice: [Choice!]!
   answer: [Answer!]!
   survey: Survey!
@@ -90,7 +90,15 @@ type Query {
 
   """설문지 조회"""
   fetchSurvey(survey_id: String!): Survey!
-  question(id: Int!): Question!
+
+  """모든 문항 조회"""
+  fetchAllQuestion: [Question!]!
+
+  """설문에 대한 모든 문항 조회"""
+  fetchAllQuestionOfSurvey(survey_id: String!): [Question!]!
+
+  """문항 조회"""
+  fetchQuestion(question_id: String!): Question!
   choice(id: Int!): Choice!
   answer(id: Int!): Answer!
   participant(id: Int!): Participant!
@@ -109,9 +117,13 @@ type Mutation {
 
   """설문지 삭제"""
   removeSurvey(survey_id: String!): Boolean!
-  createQuestion(createQuestionInput: CreateQuestionInput!): Question!
-  updateQuestion(updateQuestionInput: UpdateQuestionInput!): Question!
-  removeQuestion(id: Int!): Question!
+
+  """문항 작성"""
+  createQuestion(survey_id: String!, createQuestionInput: [CreateQuestionInput!]!): [Question!]!
+
+  """문항 수정"""
+  updateQuestion(updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
+  removeQuestion(question_id: String!): Boolean!
   createChoice(createChoiceInput: CreateChoiceInput!): Choice!
   updateChoice(updateChoiceInput: UpdateChoiceInput!): Choice!
   removeChoice(id: Int!): Choice!
@@ -143,14 +155,14 @@ input UpdateSurveyInput {
 }
 
 input CreateQuestionInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  item_no: Int!
+  item: String!
 }
 
 input UpdateQuestionInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  item_no: Int!
+  item: String!
+  question_id: String!
 }
 
 input CreateChoiceInput {
