@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SurveyService } from '../survey/survey.service';
@@ -28,15 +32,52 @@ export class QuestionService {
     return result;
   }
 
-  async update(updateQuestionInput: UpdateQuestionInput[]) {
-    const result = updateQuestionInput.map((question) =>
-      this.questionRepository.save({
-        question_id: question.question_id,
-        ...question,
-      }),
-    );
+  async update(id: string, updateQuestionInput: UpdateQuestionInput[]) {
+    const isExistSurvey = await this.surveyService.findOneById(id);
 
-    return result;
+    if (!isExistSurvey)
+      throw new NotFoundException('설문지가 존재하지 않습니다.');
+
+    const queryRunner =
+      this.questionRepository.manager.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const result = [];
+
+      for (const question of updateQuestionInput) {
+        const isExist = await queryRunner.manager.findOne(Question, {
+          where: { question_id: question.question_id },
+        });
+
+        if (!isExist) {
+          await queryRunner.rollbackTransaction();
+          throw new NotFoundException('문항이 존재하지 않습니다.'); // 함수 즉시 종료
+        }
+
+        const newQuestion = {
+          ...isExist,
+          ...question,
+        };
+
+        const saveQuestion = await queryRunner.manager.save(
+          Question,
+          newQuestion,
+        );
+
+        result.push(saveQuestion);
+      }
+
+      await queryRunner.commitTransaction();
+
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findAllBySurveyId(id: string) {

@@ -19,10 +19,11 @@ export class QuestionResolver {
 
   @Mutation(() => [Question], { description: '문항 수정' })
   async updateQuestion(
+    @Args('survey_id') id: string,
     @Args('updateQuestionInput', { type: () => [UpdateQuestionInput] })
     updateQuestionInput: UpdateQuestionInput[],
   ) {
-    return await this.questionService.update(updateQuestionInput);
+    return await this.questionService.update(id, updateQuestionInput);
   }
 
   @Query(() => [Question], { description: '모든 문항 조회' })

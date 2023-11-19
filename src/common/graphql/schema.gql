@@ -122,10 +122,10 @@ type Mutation {
   createQuestion(survey_id: String!, createQuestionInput: [CreateQuestionInput!]!): [Question!]!
 
   """문항 수정"""
-  updateQuestion(updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
+  updateQuestion(survey_id: String!, updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
   removeQuestion(question_id: String!): Boolean!
-  createChoice(createChoiceInput: CreateChoiceInput!): Choice!
-  updateChoice(updateChoiceInput: UpdateChoiceInput!): Choice!
+  createChoice(question_id: String!, createChoiceInput: [CreateChoiceInput!]!): [Choice!]!
+  updateChoice(updateChoiceInput: [UpdateChoiceInput!]!): [Choice!]!
   removeChoice(id: Int!): Choice!
   createAnswer(createAnswerInput: CreateAnswerInput!): Answer!
   updateAnswer(updateAnswerInput: UpdateAnswerInput!): Answer!
@@ -160,20 +160,22 @@ input CreateQuestionInput {
 }
 
 input UpdateQuestionInput {
-  item_no: Int!
-  item: String!
+  item_no: Int
+  item: String
   question_id: String!
 }
 
 input CreateChoiceInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  choice_no: Int!
+  choice_item: String!
+  choice_score: Int!
 }
 
 input UpdateChoiceInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  choice_item: String!
+  choice_no: Int!
+  choice_score: Int!
+  choice_id: String!
 }
 
 input CreateAnswerInput {

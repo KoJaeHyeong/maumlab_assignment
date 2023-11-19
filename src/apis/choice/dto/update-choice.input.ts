@@ -1,8 +1,17 @@
+import { Field, InputType, Int, PartialType } from '@nestjs/graphql';
 import { CreateChoiceInput } from './create-choice.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
 export class UpdateChoiceInput extends PartialType(CreateChoiceInput) {
+  @Field(() => String)
+  choice_id: string;
+
   @Field(() => Int)
-  id: number;
+  choice_no: number;
+
+  @Field(() => String)
+  choice_item: string;
+
+  @Field(() => Int)
+  choice_score: number;
 }

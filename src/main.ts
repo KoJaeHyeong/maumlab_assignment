@@ -24,7 +24,7 @@ class Application {
     });
     this.server.useGlobalPipes(
       new ValidationPipe({
-        transform: true,
+        // transform: true,
       }),
     );
     // this.server.useGlobalInterceptors(

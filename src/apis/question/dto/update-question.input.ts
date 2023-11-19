@@ -6,9 +6,9 @@ export class UpdateQuestionInput extends PartialType(CreateQuestionInput) {
   @Field(() => String)
   question_id: string;
 
-  @Field(() => Int)
-  item_no: number;
+  @Field(() => Int, { nullable: true })
+  item_no?: number;
 
-  @Field(() => String)
-  item: string;
+  @Field(() => String, { nullable: true })
+  item?: string;
 }
