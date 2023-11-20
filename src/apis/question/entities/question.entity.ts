@@ -33,8 +33,8 @@ export class Question extends CommonEntity {
   @Field(() => String)
   item: string;
 
-  @OneToMany(() => Choice, (choice) => choice.question)
-  @Field(() => [Choice])
+  @OneToMany(() => Choice, (choice) => choice.question, { cascade: true })
+  @Field(() => [Choice], { defaultValue: [] })
   choice: Choice[];
 
   @OneToMany(() => Answer, (answer) => answer.question)

@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateSurveyInput } from './dto/create-survey.input';
+import { CreateAllSurveyInput } from './dto/createAll-survey.input';
 import { UpdateSurveyInput } from './dto/update-survey.input';
 import { Survey } from './entities/survey.entity';
 import { SurveyService } from './survey.service';
@@ -15,6 +16,13 @@ export class SurveyResolver {
     return await this.surveyService.create(createSurveyInput);
   }
 
+  @Mutation(() => Survey, { description: '한번에 설문지 작성' })
+  async createAllSurvey(
+    @Args('createAllSurveyInput') createAllSurveyInput: CreateAllSurveyInput,
+  ) {
+    return await this.surveyService.createAll(createAllSurveyInput);
+  }
+
   @Mutation(() => Survey, { description: '설문지 수정' })
   async updateSurvey(
     @Args('survey_id') id: string,
@@ -28,9 +36,9 @@ export class SurveyResolver {
     return this.surveyService.findAll();
   }
 
-  @Query(() => Survey, { description: '설문지 조회' })
+  @Query(() => Survey, { description: '특정 설문지 조회' })
   async fetchSurvey(@Args('survey_id') id: string) {
-    return await this.surveyService.findOneById(id);
+    return await this.surveyService.findOneSurvey(id);
   }
 
   @Mutation(() => Boolean, {

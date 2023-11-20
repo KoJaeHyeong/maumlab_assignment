@@ -30,8 +30,10 @@ export class Survey extends CommonEntity {
   // @Field(() => User)
   // user: User;
 
-  @OneToMany(() => Question, (question) => question.survey)
-  @Field(() => [Question])
+  @OneToMany(() => Question, (question) => question.survey, {
+    cascade: true,
+  })
+  @Field(() => [Question], { defaultValue: [] })
   question: Question[];
 
   @OneToMany(() => Answer, (answer) => answer.survey)

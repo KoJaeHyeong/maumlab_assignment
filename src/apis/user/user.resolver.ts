@@ -1,5 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateUserInput } from './dto/create-user.input';
+import { Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -7,15 +6,15 @@ import { UserService } from './user.service';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Mutation(() => User, { description: '회원가입' })
-  async signUp(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return await this.userService.create(createUserInput);
-  }
+  // @Mutation(() => User, { description: '회원가입' })
+  // async signUp(@Args('createUserInput') createUserInput: CreateUserInput) {
+  //   return await this.userService.create(createUserInput);
+  // }
 
-  @Query(() => [User], { name: 'user' })
-  findAll() {
-    return this.userService.findAll();
-  }
+  // @Query(() => [User], { name: 'user' })
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
 
   // @Query(() => String)
   // findOne(@Args('id', { type: () => Int }) id: number) {

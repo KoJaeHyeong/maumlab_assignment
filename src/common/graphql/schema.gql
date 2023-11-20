@@ -75,22 +75,11 @@ type Participant {
   deleted_at: DateTime
 }
 
-type User {
-  user_id: String!
-  email: String!
-  name: String!
-  created_at: DateTime!
-  updated_at: DateTime!
-  deleted_at: DateTime
-}
-
 type Query {
-  user: [User!]!
-
   """모든 설문지 조회"""
   fetchAllSurvey: [Survey!]!
 
-  """설문지 조회"""
+  """특정 설문지 조회"""
   fetchSurvey(survey_id: String!): Survey!
 
   """모든 문항 조회"""
@@ -122,11 +111,11 @@ input UpdateParticipantInput {
 }
 
 type Mutation {
-  """회원가입"""
-  signUp(createUserInput: CreateUserInput!): User!
-
   """설문지 작성"""
   createSurvey(createSurveyInput: CreateSurveyInput!): Survey!
+
+  """한번에 설문지 작성"""
+  createAllSurvey(createAllSurveyInput: CreateAllSurveyInput!): Survey!
 
   """설문지 수정"""
   updateSurvey(survey_id: String!, updateSurveyInput: UpdateSurveyInput!): Survey!
@@ -161,15 +150,27 @@ type Mutation {
   removeCompletedSurvey(id: Int!): CompletedSurvey!
 }
 
-input CreateUserInput {
-  email: String!
-  password: String!
-  name: String!
-}
-
 input CreateSurveyInput {
   title: String!
   survey_description: String!
+}
+
+input CreateAllSurveyInput {
+  title: String!
+  survey_description: String!
+  question: [CreateAllQuestionInput!]
+}
+
+input CreateAllQuestionInput {
+  item_no: Int!
+  item: String!
+  choice: [CreateAllChoiceInput!]
+}
+
+input CreateAllChoiceInput {
+  choice_no: Int!
+  choice_item: String!
+  choice_score: Int!
 }
 
 input UpdateSurveyInput {
