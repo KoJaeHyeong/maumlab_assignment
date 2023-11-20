@@ -17,7 +17,6 @@ export class SurveyService {
 
     if (isExist)
       throw new BadRequestException('이미 존재하는 설문지 제목입니다.');
-    console.log('isExist', isExist);
 
     return await this.surveyRepository.save(createSurveyInput);
   }

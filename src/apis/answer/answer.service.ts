@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateParticipantInput } from '../participant/dto/create-participant.input';
 import { UpdateParticipantInput } from '../participant/dto/update-participant.input';
 import { Participant } from '../participant/entities/participant.entity';
+import { ParticipantService } from '../participant/participant.service';
 import { SurveyService } from '../survey/survey.service';
 import { CreateAnswerInput } from './dto/create-answer.input';
 import { UpdateAnswerInput } from './dto/update-answer.input';
@@ -14,8 +15,7 @@ export class AnswerService {
   constructor(
     @InjectRepository(Answer)
     private readonly answerRepository: Repository<Answer>,
-    @InjectRepository(Participant)
-    private readonly participantRepository: Repository<Participant>,
+    private readonly participantService: ParticipantService,
     private readonly surveyService: SurveyService,
   ) {}
 
@@ -26,15 +26,12 @@ export class AnswerService {
   ) {
     let participant: Participant;
 
-    participant = await this.participantRepository.findOne({
-      where: {
-        participant_name: createParticipantInput.participant_name,
-        participant_birth: createParticipantInput.participant_birth,
-      },
-    });
+    participant = await this.participantService.findOneParticipantByDto(
+      createParticipantInput,
+    );
 
     if (!participant) {
-      participant = await this.participantRepository.save(
+      participant = await this.participantService.createParticpant(
         createParticipantInput,
       );
     }
@@ -55,12 +52,8 @@ export class AnswerService {
     participant: UpdateParticipantInput,
     updateAnswerInput: UpdateAnswerInput[],
   ) {
-    const isExistParticipant = await this.participantRepository.findOne({
-      where: {
-        participant_name: participant.participant_name,
-        participant_birth: participant.participant_birth,
-      },
-    });
+    const isExistParticipant =
+      await this.participantService.findOneParticipantByDto(participant);
 
     if (!isExistParticipant)
       throw new NotFoundException('응답한 설문이 존재 하지 않습니다.');
@@ -80,12 +73,8 @@ export class AnswerService {
   }
 
   async findAll(surveyId: string, participant: UpdateParticipantInput) {
-    const isExistParticipant = await this.participantRepository.findOne({
-      where: {
-        participant_name: participant.participant_name,
-        participant_birth: participant.participant_birth,
-      },
-    });
+    const isExistParticipant =
+      await this.participantService.findOneParticipantByDto(participant);
 
     if (!isExistParticipant)
       throw new NotFoundException('설문참여자를 찾을수 없습니다.');
@@ -111,12 +100,8 @@ export class AnswerService {
     answerId: string,
     participant: UpdateParticipantInput,
   ) {
-    const isExistParticipant = await this.participantRepository.findOne({
-      where: {
-        participant_name: participant.participant_name,
-        participant_birth: participant.participant_birth,
-      },
-    });
+    const isExistParticipant =
+      await this.participantService.findOneParticipantByDto(participant);
 
     if (!isExistParticipant)
       throw new NotFoundException('설문참여자를 찾을수 없습니다.');
