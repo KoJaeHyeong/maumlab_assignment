@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Answer } from 'src/apis/answer/entities/answer.entity';
 import { CompletedSurvey } from 'src/apis/completed-survey/entities/completed-survey.entity';
 import { Question } from 'src/apis/question/entities/question.entity';
 import { CommonEntity } from 'src/common/entity/common.entity';
@@ -32,6 +33,10 @@ export class Survey extends CommonEntity {
   @OneToMany(() => Question, (question) => question.survey)
   @Field(() => [Question])
   question: Question[];
+
+  @OneToMany(() => Answer, (answer) => answer.survey)
+  @Field(() => [Answer])
+  answer: Answer[];
 
   @OneToMany(() => CompletedSurvey, (completedSurvey) => completedSurvey.survey)
   @Field(() => [CompletedSurvey])

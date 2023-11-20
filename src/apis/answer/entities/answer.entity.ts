@@ -3,6 +3,7 @@ import { IsUUID } from 'class-validator';
 import { Choice } from 'src/apis/choice/entities/choice.entity';
 import { Participant } from 'src/apis/participant/entities/participant.entity';
 import { Question } from 'src/apis/question/entities/question.entity';
+import { Survey } from 'src/apis/survey/entities/survey.entity';
 import { CommonEntity } from 'src/common/entity/common.entity';
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -13,6 +14,11 @@ export class Answer extends CommonEntity {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   answer_id: string;
+
+  @ManyToOne(() => Survey, (survey) => survey.answer)
+  @JoinColumn({ name: 'survey_id' })
+  @Field(() => Survey)
+  survey: Survey;
 
   @ManyToOne(() => Choice, (choice) => choice.answer)
   @JoinColumn({ name: 'choice_id' })

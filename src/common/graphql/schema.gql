@@ -2,13 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Participant {
-  participant_id: String!
-  participant_name: String!
-  participant_birth: String!
-  participant_sex: String!
-  answer: [Answer!]!
-  completedSurvey: [CompletedSurvey!]!
+type CompletedSurvey {
+  completed_survey_id: String!
+  survey: Survey!
+  participant: Participant!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -19,20 +16,12 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type CompletedSurvey {
-  completed_survey_id: String!
-  survey: Survey!
-  participant: Participant!
-  created_at: DateTime!
-  updated_at: DateTime!
-  deleted_at: DateTime
-}
-
 type Survey {
   survey_id: String!
   title: String!
   survey_description: String
   question: [Question!]!
+  answer: [Answer!]!
   completedSurvey: [CompletedSurvey!]!
   created_at: DateTime!
   updated_at: DateTime!
@@ -65,9 +54,22 @@ type Choice {
 
 type Answer {
   answer_id: String!
+  survey: Survey!
   choice: Choice!
   question: Question!
   participant: Participant!
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
+}
+
+type Participant {
+  participant_id: String!
+  participant_name: String!
+  participant_birth: String!
+  participant_sex: String!
+  answer: [Answer!]!
+  completedSurvey: [CompletedSurvey!]!
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -105,9 +107,18 @@ type Query {
 
   """선택지 조회"""
   fetchOneChoice(choice_id: String!): Choice!
-  answer(id: Int!): Answer!
-  participant(id: Int!): Participant!
+
+  """특정 참여자의 설문에 대한 모든 답변 조회"""
+  fetchAllAnswer(survey_id: String!, participant: UpdateParticipantInput!): [Answer!]!
+
+  """설문에 대한 답변 조회"""
+  fetchAnswer(survey_id: String!, answer_id: String!, participant: UpdateParticipantInput!): Answer!
   completedSurvey(id: Int!): CompletedSurvey!
+}
+
+input UpdateParticipantInput {
+  participant_name: String!
+  participant_birth: String!
 }
 
 type Mutation {
@@ -136,12 +147,15 @@ type Mutation {
   """선택지 수정"""
   updateChoice(question_id: String!, updateChoiceInput: [UpdateChoiceInput!]!): [Choice!]!
   removeChoice(choice_id: String!): Boolean!
-  createAnswer(createAnswerInput: CreateAnswerInput!): Answer!
-  updateAnswer(updateAnswerInput: UpdateAnswerInput!): Answer!
-  removeAnswer(id: Int!): Answer!
-  createParticipant(createParticipantInput: CreateParticipantInput!): Participant!
-  updateParticipant(updateParticipantInput: UpdateParticipantInput!): Participant!
-  removeParticipant(id: Int!): Participant!
+
+  """답변 등록"""
+  createAnswer(survey_id: String!, createParticipantInput: CreateParticipantInput!, createAnswerInput: [CreateAnswerInput!]!): [Answer!]!
+
+  """답변 수정"""
+  updateAnswer(participantInput: UpdateParticipantInput!, updateAnswerInput: [UpdateAnswerInput!]!): [Answer!]!
+
+  """답변 삭제"""
+  removeAnswer(answer_id: String!): Boolean!
   createCompletedSurvey(createCompletedSurveyInput: CreateCompletedSurveyInput!): CompletedSurvey!
   updateCompletedSurvey(updateCompletedSurveyInput: UpdateCompletedSurveyInput!): CompletedSurvey!
   removeCompletedSurvey(id: Int!): CompletedSurvey!
@@ -187,26 +201,21 @@ input UpdateChoiceInput {
   choice_id: String!
 }
 
+input CreateParticipantInput {
+  participant_name: String!
+  participant_birth: String!
+  participant_sex: String!
+}
+
 input CreateAnswerInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  choice_id: String!
+  question_id: String!
 }
 
 input UpdateAnswerInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateParticipantInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateParticipantInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  choice_id: String!
+  question_id: String
+  answer_id: String!
 }
 
 input CreateCompletedSurveyInput {

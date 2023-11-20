@@ -1,8 +1,14 @@
-import { CreateParticipantInput } from './create-participant.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { Field, InputType, PickType } from '@nestjs/graphql';
+import { Participant } from '../entities/participant.entity';
 
 @InputType()
-export class UpdateParticipantInput extends PartialType(CreateParticipantInput) {
-  @Field(() => Int)
-  id: number;
+export class UpdateParticipantInput extends PickType(Participant, [
+  'participant_name',
+  'participant_birth',
+] as const) {
+  @Field(() => String)
+  participant_name: string;
+
+  @Field(() => String)
+  participant_birth: string;
 }

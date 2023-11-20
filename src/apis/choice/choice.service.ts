@@ -30,7 +30,6 @@ export class ChoiceService {
 
   async update(id: string, updateChoiceInput: UpdateChoiceInput[]) {
     const question = await this.questionService.findOneById(id);
-    console.log(updateChoiceInput);
 
     if (!question) throw new NotFoundException('문항이 존재하지 않습니다.');
 
@@ -89,7 +88,6 @@ export class ChoiceService {
 
   async remove(id: string) {
     const result = await this.choiceRepository.softDelete(id);
-    console.log(result);
 
     return result.affected ? true : false;
   }

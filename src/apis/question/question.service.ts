@@ -54,7 +54,7 @@ export class QuestionService {
 
         if (!isExist) {
           await queryRunner.rollbackTransaction();
-          throw new NotFoundException('문항이 존재하지 않습니다.'); // 함수 즉시 종료
+          throw new NotFoundException('문항이 존재하지 않습니다.');
         }
 
         const newQuestion = {
