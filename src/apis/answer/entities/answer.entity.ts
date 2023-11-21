@@ -15,19 +15,21 @@ export class Answer extends CommonEntity {
   @Field(() => String)
   answer_id: string;
 
-  @ManyToOne(() => Survey, (survey) => survey.answer)
+  @ManyToOne(() => Survey, (survey) => survey.answer, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'survey_id' })
-  @Field(() => Survey)
+  @Field(() => Survey, { nullable: true })
   survey: Survey;
 
-  @ManyToOne(() => Choice, (choice) => choice.answer)
+  @ManyToOne(() => Choice, (choice) => choice.answer, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'choice_id' })
   @Field(() => Choice)
   choice: Choice;
 
-  @ManyToOne(() => Question, (question) => question.answer)
+  @ManyToOne(() => Question, (question) => question.answer, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'question_id' })
-  @Field(() => Question)
+  @Field(() => Question, { nullable: true })
   question: Question;
 
   @ManyToOne(() => Participant, (participant) => participant.answer)

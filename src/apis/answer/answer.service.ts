@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CompletedSurveyService } from '../completed-survey/completed-survey.service';
 import { CreateParticipantInput } from '../participant/dto/create-participant.input';
 import { UpdateParticipantInput } from '../participant/dto/update-participant.input';
 import { Participant } from '../participant/entities/participant.entity';
@@ -17,6 +22,7 @@ export class AnswerService {
     private readonly answerRepository: Repository<Answer>,
     private readonly participantService: ParticipantService,
     private readonly surveyService: SurveyService,
+    private readonly completedSurveyService: CompletedSurveyService,
   ) {}
 
   async create(
@@ -24,6 +30,11 @@ export class AnswerService {
     createParticipantInput: CreateParticipantInput,
     createAnswerInput: CreateAnswerInput[],
   ) {
+    const isExistSurvey = await this.surveyService.findOneById(surveyId);
+
+    if (!isExistSurvey)
+      throw new NotFoundException('설문이 존재하지 않습니다.');
+
     let participant: Participant;
 
     participant = await this.participantService.findOneParticipantByDto(
@@ -36,16 +47,30 @@ export class AnswerService {
       );
     }
 
-    const result = createAnswerInput.map((answer) => {
-      return this.answerRepository.save({
-        choice: { choice_id: answer.choice_id },
-        question: { question_id: answer.question_id },
-        participant: participant,
-        survey: { survey_id: surveyId },
-      });
+    const isCompletedSurvey =
+      await this.completedSurveyService.findOneWithSurveyAndParticipant(
+        isExistSurvey.survey_id,
+        participant.participant_id,
+      );
+
+    if (isCompletedSurvey)
+      throw new BadRequestException('이미 설문에 응답하였습니다.');
+
+    await Promise.all(
+      createAnswerInput.map(async (answer) => {
+        return await this.answerRepository.save({
+          choice: { choice_id: answer.choice_id },
+          question: { question_id: answer.question_id },
+          participant: participant,
+          survey: { survey_id: surveyId },
+        });
+      }),
+    ).then(async (value) => {
+      // 설문지 응답 완료
+      await this.completedSurveyService.create(isExistSurvey, participant);
     });
 
-    return result;
+    return '응답이 완료되었습니다.';
   }
 
   async update(

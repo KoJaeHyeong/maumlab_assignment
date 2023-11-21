@@ -28,52 +28,73 @@ export class QuestionService {
     return result;
   }
 
-  async update(id: string, updateQuestionInput: UpdateQuestionInput[]) {
+  async update(id: string, updateQuestionInput: UpdateQuestionInput) {
     const isExistSurvey = await this.surveyService.findOneById(id);
 
     if (!isExistSurvey)
       throw new NotFoundException('설문지가 존재하지 않습니다.');
 
-    const queryRunner =
-      this.questionRepository.manager.connection.createQueryRunner();
+    const isExistQuestion = await this.findOneById(
+      updateQuestionInput.question_id,
+    );
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const result = [];
-
-      for (const question of updateQuestionInput) {
-        const isExist = await queryRunner.manager.findOne(Question, {
-          where: { question_id: question.question_id },
-        });
-
-        if (!isExist) {
-          await queryRunner.rollbackTransaction();
-          throw new NotFoundException('문항이 존재하지 않습니다.');
-        }
-
-        const newQuestion = {
-          ...isExist,
-          ...question,
-        };
-
-        const saveQuestion = await queryRunner.manager.save(
-          Question,
-          newQuestion,
-        );
-
-        result.push(saveQuestion);
-      }
-
-      await queryRunner.commitTransaction();
-
-      return result;
-    } catch (error) {
-      throw error;
-    } finally {
-      await queryRunner.release();
+    if (!isExistQuestion) {
+      throw new NotFoundException('문항이 존재하지 않습니다.');
     }
+
+    const newQuestion = {
+      ...isExistQuestion,
+      ...updateQuestionInput,
+    };
+
+    const result = await this.questionRepository.save({
+      ...newQuestion,
+      survey: isExistSurvey,
+    });
+
+    return result;
+
+    //* 하위 코드 -> 한번에 업데이트 할 시 중간에 문항이 삭제될 경우에 대한 트랜젝션
+    // const queryRunner =
+    //   this.questionRepository.manager.connection.createQueryRunner();
+
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
+
+    // try {
+    //   const result = [];
+
+    //   for (const question of updateQuestionInput) {
+    //     const isExist = await queryRunner.manager.findOne(Question, {
+    //       where: { question_id: question.question_id },
+    //     });
+
+    //     if (!isExist) {
+    //       await queryRunner.rollbackTransaction();
+    //       throw new NotFoundException('문항이 존재하지 않습니다.');
+    //     }
+
+    //     const newQuestion = {
+    //       ...isExist,
+    //       ...question,
+    //     };
+
+    //     const saveQuestion = await queryRunner.manager.save(
+    //       Question,
+    //       newQuestion,
+    //     );
+
+    //     result.push(saveQuestion);
+    //   }
+
+    //   await queryRunner.commitTransaction();
+
+    //   return result;
+    // } catch (error) {
+    //   throw error;
+    // } finally {
+    //   await queryRunner.release();
+    // }
   }
 
   async findAllBySurveyId(id: string) {
@@ -83,10 +104,6 @@ export class QuestionService {
     });
 
     return result;
-  }
-
-  async findAll() {
-    return await this.questionRepository.find();
   }
 
   async findOneById(id: string) {

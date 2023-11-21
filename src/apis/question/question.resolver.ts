@@ -17,22 +17,17 @@ export class QuestionResolver {
     return await this.questionService.create(id, createQuestionInput);
   }
 
-  @Mutation(() => [Question], { description: '문항 수정' })
+  @Mutation(() => Question, { description: '문항 수정' })
   async updateQuestion(
     @Args('survey_id') id: string,
-    @Args('updateQuestionInput', { type: () => [UpdateQuestionInput] })
-    updateQuestionInput: UpdateQuestionInput[],
+    @Args('updateQuestionInput', { type: () => UpdateQuestionInput })
+    updateQuestionInput: UpdateQuestionInput,
   ) {
     return await this.questionService.update(id, updateQuestionInput);
   }
 
-  @Query(() => [Question], { description: '모든 문항 조회' })
-  async fetchAllQuestion() {
-    return await this.questionService.findAll();
-  }
-
   @Query(() => [Question], { description: '설문에 대한 모든 문항 조회' })
-  async fetchAllQuestionOfSurvey(
+  async fetchAllQuestion(
     @Args('survey_id', { type: () => String }) id: string,
   ) {
     return await this.questionService.findAllBySurveyId(id);

@@ -24,7 +24,9 @@ export class SurveyResolver {
     return this.surveyService.update(id, updateSurveyInput);
   }
 
-  @Query(() => SurveyPagination, { description: '페이징된 설문지 조회' })
+  @Query(() => SurveyPagination, {
+    description: '작성이 완료된 설문지 paging 조회',
+  })
   async fetchAllSurvey(
     @Args('page', { type: () => Int }) page: number,
     @Args('take', { type: () => Int }) take: number,

@@ -10,7 +10,7 @@ import { Answer } from './entities/answer.entity';
 export class AnswerResolver {
   constructor(private readonly answerService: AnswerService) {}
 
-  @Mutation(() => [Answer], { description: '답변 등록' })
+  @Mutation(() => String, { description: '답변 등록' })
   async createAnswer(
     @Args('survey_id') surveyId: string,
     @Args('createParticipantInput')

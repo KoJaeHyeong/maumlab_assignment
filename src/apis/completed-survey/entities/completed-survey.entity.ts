@@ -13,15 +13,17 @@ export class CompletedSurvey extends CommonEntity {
   @Field(() => String)
   completed_survey_id: string;
 
-  @ManyToOne(() => Survey, (survey) => survey.completedSurvey)
-  @JoinColumn({ name: 'survey_id' })
-  @Field(() => Survey)
-  survey: Survey;
-
   @ManyToOne(() => Participant, (participant) => participant.completedSurvey)
   @JoinColumn({ name: 'participant_id' })
   @Field(() => Participant)
   participant: Participant;
+
+  @ManyToOne(() => Survey, (survey) => survey.completedSurvey, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'survey_id' })
+  @Field(() => Survey)
+  survey: Survey;
 
   @Field(() => Date)
   created_at: Date;

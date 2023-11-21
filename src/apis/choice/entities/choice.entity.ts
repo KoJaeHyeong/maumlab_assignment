@@ -38,14 +38,16 @@ export class Choice extends CommonEntity {
   @Field(() => Int)
   choice_score: number;
 
-  @OneToMany(() => Answer, (answer) => answer.choice)
-  @Field(() => [Answer])
-  answer: Answer[];
+  @OneToMany(() => Answer, (answer) => answer.choice, { onDelete: 'CASCADE' })
+  @Field(() => [Answer], { nullable: true, defaultValue: [] })
+  answer?: Answer[];
 
-  @ManyToOne(() => Question, (question) => question.choice)
+  @ManyToOne(() => Question, (question) => question.choice, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'question_id' })
-  @Field(() => Question)
-  question: Question;
+  @Field(() => Question, { nullable: true, defaultValue: null })
+  question?: Question;
 
   @Field(() => Date)
   created_at: Date;

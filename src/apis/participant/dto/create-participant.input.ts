@@ -10,9 +10,9 @@ export class CreateParticipantInput extends PickType(Participant, [
   @Field(() => String)
   participant_name: string;
 
-  @Field(() => String)
+  @Field(() => String, { description: 'yyyyMMdd 형식' })
   participant_birth: string;
 
-  @Field(() => String)
+  @Field(() => String, { description: '남자/여자' })
   participant_sex: string;
 }

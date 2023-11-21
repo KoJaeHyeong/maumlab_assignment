@@ -34,14 +34,14 @@ export class Question extends CommonEntity {
   item: string;
 
   @OneToMany(() => Choice, (choice) => choice.question, { cascade: true })
-  @Field(() => [Choice], { defaultValue: [] })
-  choice: Choice[];
+  @Field(() => [Choice], { defaultValue: [], nullable: true })
+  choice?: Choice[];
 
   @OneToMany(() => Answer, (answer) => answer.question)
-  @Field(() => [Answer])
-  answer: Answer[];
+  @Field(() => [Answer], { defaultValue: [], nullable: true })
+  answer?: Answer[];
 
-  @ManyToOne(() => Survey, (survey) => survey.question)
+  @ManyToOne(() => Survey, (survey) => survey.question, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'survey_id' })
   @Field(() => Survey)
   survey: Survey;

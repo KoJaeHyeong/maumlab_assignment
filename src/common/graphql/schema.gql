@@ -2,20 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type CompletedSurvey {
-  completed_survey_id: String!
-  survey: Survey!
-  participant: Participant!
-  created_at: DateTime!
-  updated_at: DateTime!
-  deleted_at: DateTime
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Survey {
   survey_id: String!
   title: String!
@@ -28,12 +14,17 @@ type Survey {
   deleted_at: DateTime
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Question {
   question_id: String!
   item_no: Int!
   item: String!
-  choice: [Choice!]!
-  answer: [Answer!]!
+  choice: [Choice!]
+  answer: [Answer!]
   survey: Survey!
   created_at: DateTime!
   updated_at: DateTime!
@@ -45,8 +36,8 @@ type Choice {
   choice_item: String!
   choice_no: Int!
   choice_score: Int!
-  answer: [Answer!]!
-  question: Question!
+  answer: [Answer!]
+  question: Question
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -54,9 +45,9 @@ type Choice {
 
 type Answer {
   answer_id: String!
-  survey: Survey!
+  survey: Survey
   choice: Choice!
-  question: Question!
+  question: Question
   participant: Participant!
   created_at: DateTime!
   updated_at: DateTime!
@@ -75,6 +66,21 @@ type Participant {
   deleted_at: DateTime
 }
 
+type CompletedSurvey {
+  completed_survey_id: String!
+  participant: Participant!
+  survey: Survey!
+  created_at: DateTime!
+  updated_at: DateTime!
+  deleted_at: DateTime
+}
+
+type CompletedSurveyWithScore {
+  participant: Participant!
+  survey: Survey!
+  total_score: Int!
+}
+
 type SurveyPagination {
   """설문지 목록"""
   survey: [Survey!]!
@@ -84,33 +90,32 @@ type SurveyPagination {
 }
 
 type Query {
-  """페이징된 설문지 조회"""
+  """작성이 완료된 설문지 paging 조회"""
   fetchAllSurvey(page: Int!, take: Int!): SurveyPagination!
 
   """특정 설문지 조회"""
   fetchSurvey(survey_id: String!): Survey!
 
-  """모든 문항 조회"""
-  fetchAllQuestion: [Question!]!
-
   """설문에 대한 모든 문항 조회"""
-  fetchAllQuestionOfSurvey(survey_id: String!): [Question!]!
+  fetchAllQuestion(survey_id: String!): [Question!]!
 
   """문항 조회"""
   fetchQuestion(question_id: String!): Question!
 
-  """모든 선택지 조회"""
-  fetchAllChoiceOfQuestion(question_id: String!): [Choice!]!
-
-  """선택지 조회"""
-  fetchOneChoice(choice_id: String!): Choice!
+  """문항에 대한 선택지 조회"""
+  fetchAllChoice(question_id: String!): [Choice!]!
 
   """특정 참여자의 설문에 대한 모든 답변 조회"""
   fetchAllAnswer(survey_id: String!, participant: UpdateParticipantInput!): [Answer!]!
 
   """설문에 대한 답변 조회"""
   fetchAnswer(survey_id: String!, answer_id: String!, participant: UpdateParticipantInput!): Answer!
-  completedSurvey(id: Int!): CompletedSurvey!
+
+  """답변이 달린 모든 설문에 대한 설문자 및 답변 조회"""
+  fetchCompletedAllSurveyWithAnswer(survey_id: String!): [CompletedSurveyWithScore!]!
+
+  """특정 설문에 대해 설문자 및 답변 조회"""
+  fetchCompletedSurveyWithAnswer(survey_id: String!, participant_id: String!): CompletedSurveyWithScore!
 }
 
 input UpdateParticipantInput {
@@ -132,7 +137,7 @@ type Mutation {
   createQuestion(survey_id: String!, createQuestionInput: [CreateQuestionInput!]!): [Question!]!
 
   """문항 수정"""
-  updateQuestion(survey_id: String!, updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
+  updateQuestion(survey_id: String!, updateQuestionInput: UpdateQuestionInput!): Question!
 
   """문항 삭제"""
   removeQuestion(question_id: String!): Boolean!
@@ -141,20 +146,20 @@ type Mutation {
   createChoice(question_id: String!, createChoiceInput: [CreateChoiceInput!]!): [Choice!]!
 
   """선택지 수정"""
-  updateChoice(question_id: String!, updateChoiceInput: [UpdateChoiceInput!]!): [Choice!]!
+  updateChoice(question_id: String!, updateChoiceInput: UpdateChoiceInput!): Choice!
   removeChoice(choice_id: String!): Boolean!
 
   """답변 등록"""
-  createAnswer(survey_id: String!, createParticipantInput: CreateParticipantInput!, createAnswerInput: [CreateAnswerInput!]!): [Answer!]!
+  createAnswer(survey_id: String!, createParticipantInput: CreateParticipantInput!, createAnswerInput: [CreateAnswerInput!]!): String!
 
   """답변 수정"""
   updateAnswer(participantInput: UpdateParticipantInput!, updateAnswerInput: [UpdateAnswerInput!]!): [Answer!]!
 
   """답변 삭제"""
   removeAnswer(answer_id: String!): Boolean!
-  createCompletedSurvey(createCompletedSurveyInput: CreateCompletedSurveyInput!): CompletedSurvey!
-  updateCompletedSurvey(updateCompletedSurveyInput: UpdateCompletedSurveyInput!): CompletedSurvey!
-  removeCompletedSurvey(id: Int!): CompletedSurvey!
+
+  """완료된 설문지 삭제"""
+  removeCompletedSurvey(survey_id: String!, participant_id: String!): Boolean!
 }
 
 input CreateSurveyInput {
@@ -193,7 +198,11 @@ input UpdateChoiceInput {
 
 input CreateParticipantInput {
   participant_name: String!
+
+  """yyyyMMdd 형식"""
   participant_birth: String!
+
+  """남자/여자"""
   participant_sex: String!
 }
 
@@ -206,15 +215,4 @@ input UpdateAnswerInput {
   choice_id: String!
   question_id: String
   answer_id: String!
-}
-
-input CreateCompletedSurveyInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateCompletedSurveyInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }
