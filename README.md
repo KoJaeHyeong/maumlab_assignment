@@ -12,7 +12,7 @@
   - 완료된 설문지 확인
     - 조회 시 답변의 총점이 같이 반환됩니다.
 ### 3. ERD
-<img src="img/erd.png">
+<img src="img/erd.png" width="400px" height="400px">
 
 ## 🚀 설치방법
   1. [docker 공식 사이트](https://www.docker.com/get-started/) 에서 환경에 맞춰 설치 해주세요.
