@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SurveyService } from '../survey/survey.service';
@@ -20,7 +16,7 @@ export class QuestionService {
 
   async create(id: string, createQuestionInput: CreateQuestionInput[]) {
     const survey = await this.surveyService.findOneById(id);
-    if (!survey) throw new BadRequestException('설문지가 존재하지 않습니다.');
+    if (!survey) throw new NotFoundException('설문지가 존재하지 않습니다.');
 
     const result = createQuestionInput.map((question) =>
       this.questionRepository.save({
@@ -83,6 +79,7 @@ export class QuestionService {
   async findAllBySurveyId(id: string) {
     const result = await this.questionRepository.find({
       where: { survey: { survey_id: id } },
+      order: { item_no: 'ASC' },
     });
 
     return result;

@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSurveyInput } from './dto/create-survey.input';
-import { CreateAllSurveyInput } from './dto/createAll-survey.input';
 import { UpdateSurveyInput } from './dto/update-survey.input';
 import { Survey } from './entities/survey.entity';
 
@@ -26,45 +25,46 @@ export class SurveyService {
     return await this.surveyRepository.save(createSurveyInput);
   }
 
-  async createAll(createAllSurveyInput: CreateAllSurveyInput) {
-    const isExist = await this.findOneSurveybyTitle(createAllSurveyInput.title);
-
-    if (isExist)
-      throw new BadRequestException('이미 존재하는 설문지 제목입니다.');
-
-    const result = await this.surveyRepository.save(createAllSurveyInput);
-    console.log(result);
-
-    return result;
-  }
-
   async update(id: string, updateSurveyInput: UpdateSurveyInput) {
-    const isExist = await this.surveyRepository.findOne({
-      where: { survey_id: id },
-    });
+    const isExist = await this.findOneById(id);
 
-    if (!isExist) throw new BadRequestException('존재하지 않는 설문입니다.');
+    if (!isExist) throw new NotFoundException('존재하지 않는 설문입니다.');
 
     const newSurvey = {
       ...isExist,
       ...updateSurveyInput,
     };
 
-    return await this.surveyRepository.save(newSurvey);
+    const result = await this.surveyRepository.save(newSurvey);
+    console.log(result);
+
+    result.title = '메롱';
+
+    return result;
   }
 
-  async findAll() {
-    return await this.surveyRepository.find({
+  async findAll(page: number, take: number) {
+    if (page <= 0) throw new BadRequestException('페이지를 불러올수 없습니다.');
+
+    const [survey, total] = await this.surveyRepository.findAndCount({
+      take: take,
+      skip: (page - 1) * take,
       relations: ['question', 'question.choice'],
-      order: { question: { item_no: 'ASC', choice: { choice_no: 'asc' } } },
+
+      order: {
+        created_at: 'ASC',
+        question: { item_no: 'ASC', choice: { choice_no: 'ASC' } },
+      },
     });
+
+    return { survey, total };
   }
 
   async findOneSurvey(survetId: string) {
     const result = await this.surveyRepository.findOne({
       where: { survey_id: survetId },
       relations: ['question', 'question.choice'],
-      order: { question: { item_no: 'ASC', choice: { choice_no: 'asc' } } },
+      order: { question: { item_no: 'ASC', choice: { choice_no: 'ASC' } } },
     });
 
     if (!result) throw new NotFoundException('설문이 존재하지 않습니다.');
@@ -72,18 +72,20 @@ export class SurveyService {
     return result;
   }
 
+  async remove(id: string) {
+    const result = await this.surveyRepository.softDelete(id);
+
+    return result.affected ? true : false;
+  }
+
+  /* ******************************* */
+  /*           재사용 공통 함수          */
+  /* ******************************* */
+
   async findOneById(id: string) {
     return await this.surveyRepository.findOne({
       where: { survey_id: id },
     });
-  }
-
-  async remove(id: string) {
-    const result = await this.surveyRepository.softDelete(id);
-
-    console.log(result);
-
-    return result.affected ? true : false;
   }
 
   async findOneSurveybyTitle(title: string) {

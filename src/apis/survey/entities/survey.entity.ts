@@ -33,16 +33,20 @@ export class Survey extends CommonEntity {
   @OneToMany(() => Question, (question) => question.survey, {
     cascade: true,
   })
-  @Field(() => [Question], { defaultValue: [] })
-  question: Question[];
+  @Field(() => [Question], { defaultValue: [], nullable: true })
+  question?: Question[];
 
-  @OneToMany(() => Answer, (answer) => answer.survey)
-  @Field(() => [Answer])
-  answer: Answer[];
+  @OneToMany(() => Answer, (answer) => answer.survey, { cascade: true })
+  @Field(() => [Answer], { defaultValue: [], nullable: true })
+  answer?: Answer[];
 
-  @OneToMany(() => CompletedSurvey, (completedSurvey) => completedSurvey.survey)
-  @Field(() => [CompletedSurvey])
-  completedSurvey: CompletedSurvey[];
+  @OneToMany(
+    () => CompletedSurvey,
+    (completedSurvey) => completedSurvey.survey,
+    { cascade: true },
+  )
+  @Field(() => [CompletedSurvey], { defaultValue: [], nullable: true })
+  completedSurvey?: CompletedSurvey[];
 
   @Field(() => Date)
   created_at: Date;

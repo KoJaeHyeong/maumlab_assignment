@@ -12,6 +12,6 @@ export class UpdateAllQuestionInput {
   @Field(() => String, { nullable: true })
   item?: string;
 
-  @Field(() => [UpdateAllChoiceInput])
+  @Field(() => [UpdateAllChoiceInput], { nullable: true })
   choice?: UpdateAllChoiceInput[];
 }

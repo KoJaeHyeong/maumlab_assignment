@@ -20,9 +20,9 @@ type Survey {
   survey_id: String!
   title: String!
   survey_description: String
-  question: [Question!]!
-  answer: [Answer!]!
-  completedSurvey: [CompletedSurvey!]!
+  question: [Question!]
+  answer: [Answer!]
+  completedSurvey: [CompletedSurvey!]
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
@@ -75,9 +75,17 @@ type Participant {
   deleted_at: DateTime
 }
 
+type SurveyPagination {
+  """설문지 목록"""
+  survey: [Survey!]!
+
+  """설문지 총 개수"""
+  total: Int!
+}
+
 type Query {
-  """모든 설문지 조회"""
-  fetchAllSurvey: [Survey!]!
+  """페이징된 설문지 조회"""
+  fetchAllSurvey(page: Int!, take: Int!): SurveyPagination!
 
   """특정 설문지 조회"""
   fetchSurvey(survey_id: String!): Survey!
@@ -114,9 +122,6 @@ type Mutation {
   """설문지 작성"""
   createSurvey(createSurveyInput: CreateSurveyInput!): Survey!
 
-  """한번에 설문지 작성"""
-  createAllSurvey(createAllSurveyInput: CreateAllSurveyInput!): Survey!
-
   """설문지 수정"""
   updateSurvey(survey_id: String!, updateSurveyInput: UpdateSurveyInput!): Survey!
 
@@ -128,6 +133,8 @@ type Mutation {
 
   """문항 수정"""
   updateQuestion(survey_id: String!, updateQuestionInput: [UpdateQuestionInput!]!): [Question!]!
+
+  """문항 삭제"""
   removeQuestion(question_id: String!): Boolean!
 
   """선택지 등록"""
@@ -153,24 +160,6 @@ type Mutation {
 input CreateSurveyInput {
   title: String!
   survey_description: String!
-}
-
-input CreateAllSurveyInput {
-  title: String!
-  survey_description: String!
-  question: [CreateAllQuestionInput!]
-}
-
-input CreateAllQuestionInput {
-  item_no: Int!
-  item: String!
-  choice: [CreateAllChoiceInput!]
-}
-
-input CreateAllChoiceInput {
-  choice_no: Int!
-  choice_item: String!
-  choice_score: Int!
 }
 
 input UpdateSurveyInput {

@@ -43,7 +43,7 @@ export class QuestionResolver {
     return await this.questionService.findOneById(id);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, { description: '문항 삭제' })
   async removeQuestion(
     @Args('question_id', { type: () => String }) id: string,
   ) {
