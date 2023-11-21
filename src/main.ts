@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
-import { ResponseInterceptor } from './common/filter/response.interceptor';
 
 class Application {
   private logger = new Logger(Application.name);
@@ -31,7 +30,7 @@ class Application {
     // this.server.useGlobalInterceptors(
     //   new ClassSerializerInterceptor(this.server.get(Reflector)),
     // );
-    this.server.useGlobalInterceptors(new ResponseInterceptor());
+    // this.server.useGlobalInterceptors(new ResponseInterceptor());
     this.server.useGlobalFilters(new HttpExceptionFilter());
   }
 
