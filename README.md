@@ -15,7 +15,7 @@
 <img src="img/erd.png" width="600px" height="500px">
 
 ## 🚀 설치방법
-  1. [docker 공식 사이트](https://www.docker.com/get-started/) 에서 환경에 맞춰 설치 해주세요.
+  1. [docker 공식 사이트](https://www.docker.com/get-started/) 에서 도커를 환경에 맞게 설치 해주세요.
     자동으로 docker compose도 같이 설치가 됩니다.
   2. .env 파일을 생성 하여 아래의 값을 입력해줍니다.
   ```bash
