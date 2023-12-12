@@ -45,17 +45,23 @@ export class SurveyService {
 
   async findAll(page: number, take: number) {
     if (page <= 0) throw new BadRequestException('페이지를 불러올수 없습니다.');
+    let surveyResult = [];
 
     const [survey, total] = await this.surveyRepository.findAndCount({
       take: take,
       skip: (page - 1) * take,
-      relations: ['question', 'question.choice'],
-
+      // relations: ['question', 'question.choice'],
+      relations: { question: { choice: true } },
       order: {
         created_at: 'ASC',
-        question: { item_no: 'ASC', choice: { choice_no: 'ASC' } },
+        //   question: { item_no: 'ASC' },
       },
     });
+
+    for (let sort of survey) {
+      sort.question.sort((a, b) => a.item_no - b.item_no);
+      console.log('sort', sort);
+    }
 
     return { survey, total };
   }
